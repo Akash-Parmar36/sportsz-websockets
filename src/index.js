@@ -1,15 +1,16 @@
 import express from "express";
 
 const app = express();
-const port = 8080;
-const host = "localhost";
-
-app.use(express.json());
+const PORT = 8000;  
 
 app.get("/", (req, res) => {
-  res.send("Hello from express server");
+  res.send("Hello from Express Server");
 });
 
-app.listen(port, host, () => {
-  console.log(`Server running at http://${host}:${port}`);
+app.listen(PORT, () => {
+  console.log(`Server is running at http://localhost:${PORT}`);
 });
+
+
+
+
