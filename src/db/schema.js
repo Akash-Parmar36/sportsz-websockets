@@ -31,3 +31,4 @@ export const commentary = pgTable('commentary', {
   tags: text('tags').array(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
+
