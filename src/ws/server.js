@@ -21,10 +21,25 @@ export function attachWebSocketServer(server) {
     const wss = new WebSocketServer({ server, path: '/ws', maxPayload: 1024 * 1024 }); // 1MB max payload
 
     wss.on('connection', (socket) => {
-        sendJson(socket, { type: 'welcome', message: 'Connected to live match updates' });
+        socket.isAlive = true;
+        socket.on('pong', () => { socket.isAlive = true; });
 
+        sendJson(socket, { type: 'welcome', message: 'Connected to live match updates' });
         socket.on('error', console.error);
     });
+    
+    const heartbeatInterval = setInterval(() => {
+                for (const client of wss.clients) {
+                    if (!client.isAlive) {
+                        client.terminate();
+                        continue;
+                    }
+                    client.isAlive = false;
+                    client.ping();
+                }
+    }, 30000);
+
+    wss.on('close', () => clearInterval(heartbeatInterval));
 
     function broadcastMatchCreated(match) {
         broadcast(wss, { type: 'match_created', data: match });
