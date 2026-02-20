@@ -5,14 +5,37 @@ function sendJson(socket, payload){
         console.warn("WebSocket is not open");
         return;
     }
-    socket.send(JSON.stringify(payload));
+    
+    let message;
+    
+    try {
+        message = JSON.stringify(payload);
+    } catch (err) {
+        console.warn("Failed to serialize WS payload", err);
+        return;
+    }
+
+    socket.send(message, (err) => {
+        if (err) console.warn("Failed to send WS payload", err);
+    });
 }
 
-function broadcast(wss, payload){
-    for(const client of wss.clients){
-        sendJson(client, payload);
+ function broadcast(wss, payload){
+    let message;
+    try {
+        message = JSON.stringify(payload);
+    } catch (err) {
+        console.error("Failed to serialize broadcast payload", err);
+        return;
     }
-}
+
+    for(const client of wss.clients){
+        if(client.readyState !== WebSocket.OPEN) {
+            continue;
+        }
+        client.send(message);
+    }
+ }
 
 export function attachWebSocketServer(server) {
     const wss = new WebSocketServer({ server, path: '/ws', maxPayload: 1024 * 1024 }); // 1MB max payload
@@ -27,16 +50,27 @@ export function attachWebSocketServer(server) {
     
     const heartbeatInterval = setInterval(() => {
                 for (const client of wss.clients) {
+                    if (client.readyState !== WebSocket.OPEN) {
+                        client.terminate();
+                        continue;
+                    }
+
                     if (!client.isAlive) {
                         client.terminate();
                         continue;
                     }
+
                     client.isAlive = false;
                     client.ping();
                 }
     }, 30000);
-
+    
     wss.on('close', () => clearInterval(heartbeatInterval));
+    
+    server.on('close', () => {
+        clearInterval(heartbeatInterval);
+        wss.close();
+    });
 
     function broadcastMatchCreated(match) {
         broadcast(wss, { type: 'match_created', data: match });
