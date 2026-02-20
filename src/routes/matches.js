@@ -59,9 +59,9 @@ matchRouter.post('/', async (req, res) => {
         
         console.log("Created match = ", event);
 
-      //   if(res.app.locals.broadcastMatchCreated) {
-      //       res.app.locals.broadcastMatchCreated(event);
-      //   }
+        if(res.app.locals.broadcastMatchCreated) {
+            res.app.locals.broadcastMatchCreated(event);
+        }
      
         res.status(201).json({ data: event });
     } catch (e) {
