@@ -39,7 +39,7 @@ function sendJson(socket, payload){
  }
 
 export function attachWebSocketServer(server) {
-    const wss = new WebSocketServer({ server, path: '/ws', maxPayload: 1024 * 1024 }); // 1MB max payload
+    const wss = new WebSocketServer({ noServer: true, maxPayload: 1024 * 1024 }); // 1MB max payload
     
     server.on('upgrade', async (req, socket, head) => {
         const { pathname } = new URL(req.url, `http://${req.headers.host}`);
@@ -74,7 +74,7 @@ export function attachWebSocketServer(server) {
         });
     });
 
-    wss.on('connection', async (socket, req) => {
+    wss.on('connection', (socket, req) => {
         socket.isAlive = true;
         socket.on('pong', () => { socket.isAlive = true; });
 
