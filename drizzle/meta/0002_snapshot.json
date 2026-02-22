@@ -1,6 +1,6 @@
 {
-  "id": "6f46d584-a1d3-4786-b37d-0b49efa4b7d7",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "e9d5a8ae-709e-4d94-9261-1255a72bb283",
+  "prevId": "bca31060-8be0-4494-822e-a604b02cb0e8",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -20,11 +20,11 @@
           "primaryKey": false,
           "notNull": true
         },
-        "minute": {
-          "name": "minute",
+        "minutes": {
+          "name": "minutes",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "sequence": {
           "name": "sequence",

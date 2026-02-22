@@ -1,6 +1,6 @@
 {
-  "id": "6f46d584-a1d3-4786-b37d-0b49efa4b7d7",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "bca31060-8be0-4494-822e-a604b02cb0e8",
+  "prevId": "6f46d584-a1d3-4786-b37d-0b49efa4b7d7",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -20,8 +20,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "minute": {
-          "name": "minute",
+        "minutes": {
+          "name": "minutes",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
