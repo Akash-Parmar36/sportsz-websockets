@@ -15,6 +15,13 @@
       "when": 1771701852453,
       "tag": "0001_superb_rhino",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1771766115862,
+      "tag": "0002_slimy_timeslip",
+      "breakpoints": true
     }
   ]
 }

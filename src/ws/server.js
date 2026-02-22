@@ -74,7 +74,13 @@ function broadcastToMatch(matchId, payload) {
     const subscribers = matchSubscribers.get(matchId);
     if(!subscribers || subscribers.size === 0) return;
 
-    const message = JSON.stringify(payload);
+    let message;
+    try {
+        message = JSON.stringify(payload);
+    } catch (err) {
+        console.error("Failed to serialize match broadcast payload", err);
+        return;
+    }
 
     for(const client of subscribers) {
         if(client.readyState === WebSocket.OPEN) {
@@ -89,7 +95,8 @@ function handleMessage(socket, data) {
     try {
         message = JSON.parse(data.toString());
     } catch {
-        sendJson(socket, { type: 'error', message: 'Invalid JSON' });
+       sendJson(socket, { type: 'error', message: 'Invalid JSON' });
+       return;       
     }
 
     if(message?.type === "subscribe" && Number.isInteger(message.matchId)) {

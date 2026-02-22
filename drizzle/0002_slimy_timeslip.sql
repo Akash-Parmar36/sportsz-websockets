@@ -1,0 +1,1 @@
+ALTER TABLE "commentary" ALTER COLUMN "minutes" SET NOT NULL;

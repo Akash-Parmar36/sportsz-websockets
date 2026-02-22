@@ -10,16 +10,13 @@ export const matchRouter = Router();
 const MAX_LIMIT = 100;
 
 matchRouter.get('/', async (req, res) => {
-    // console.log("Received query params = ", req.query);
     const parsed = listMatchesQuerySchema.safeParse(req.query);
-    // console.log("Parsed = ", parsed);;
 
     if (!parsed.success) {
         return res.status(400).json({error: 'Invalid query.', details: parsed.error.issues });
     }
     
     const limit = Math.min(parsed.data.limit ?? 50, MAX_LIMIT);
-    // console.log("Final limit = ", limit);
 
     try {
         const data = await db
@@ -27,8 +24,7 @@ matchRouter.get('/', async (req, res) => {
                     .from(matches)
                     .orderBy((desc(matches.createdAt)))
                     .limit(limit)
-        
-        // console.log("Fetched matches = ", data);            
+                   
         res.json({ data });
     } catch (e) {
         console.error(e);
@@ -38,8 +34,6 @@ matchRouter.get('/', async (req, res) => {
 
 matchRouter.post('/', async (req, res) => {
     const parsed = createMatchSchema.safeParse(req.body);
-    
-    // console.log("parsed before passing zod Validation = ", parsed);
 
     if(!parsed.success) {
         return res.status(400).json({ error: 'Invalid payload.', details: parsed.error.issues });

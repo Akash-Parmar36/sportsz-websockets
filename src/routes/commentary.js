@@ -3,21 +3,18 @@ import { eq, desc } from "drizzle-orm";
 import { matchIdParamSchema } from "../validation/matches.js";
 import { createCommentarySchema, listCommentaryQuerySchema } from "../validation/commentary.js";
 import { db } from "../db/db.js";
-import { commentary } from "../db/schema.js";
+import { commentary, matches } from "../db/schema.js";
 
 const MAX_LIMIT = 100;
 
 export const commentaryRouter = Router({ mergeParams: true });
 
 commentaryRouter.get('/', async (req, res) => {
-    // console.log("req.params = ", req.params);
     const paramsResult = matchIdParamSchema.safeParse(req.params);
 
     if (!paramsResult.success) {
         return res.status(400).json({ error: 'Invalid match ID.', details: paramsResult.error.issues });
     }
-     
-    // console.log("paramsResult = ", paramsResult);
     
     const queryResult = listCommentaryQuerySchema.safeParse(req.query);
     if (!queryResult.success) {
@@ -45,22 +42,30 @@ commentaryRouter.get('/', async (req, res) => {
 });
 
 commentaryRouter.post('/', async (req, res) => {
-    // console.log("req.params = ", req.params);
     const paramsResult = matchIdParamSchema.safeParse(req.params);
 
     if (!paramsResult.success) {
         return res.status(400).json({ error: 'Invalid match ID.', details: paramsResult.error.issues });
     }
     
-    // console.log("paramsResult = ", paramsResult);
     const bodyResult = createCommentarySchema.safeParse(req.body);
 
     if (!bodyResult.success) {
         return res.status(400).json({ error: 'Invalid commentary payload.', details: bodyResult.error.issues });
     }
     
-    // console.log("bodyResult = ", bodyResult);
     try {
+
+        const [matchExists] = await db
+                            .select({ id: matches.id })
+                            .from(matches)
+                            .where(eq(matches.id, paramsResult.data.id))
+                            .limit(1);
+        
+        if (!matchExists) {
+            return res.status(404).json({ error: 'Match not found.' });
+        }
+
         const { minutes, ...rest } = bodyResult.data;
         const [result] = await db.insert(commentary).values({
             matchId: paramsResult.data.id,
